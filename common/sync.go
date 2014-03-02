@@ -16,8 +16,18 @@ func (h *SyncHandlers) GetConfig() []string {
 		"graph_vlabel Line Sync Data Rate kbps",
 		"graph_scale no",
 		"graph_title Line Sync Data Rate kbps",
-		"sync.label Line Sync Data Rate kbps",
-		"sync.info The current sync speed to the Internet",
+
+		"upstream.label Upstream Line Sync Data Rate kbps",
+		"upstream.info The current upstream sync speed to the Internet",
+
+		"downstream.label Downstream Line Sync Data Rate kbps",
+		"downstream.info The current downstream sync speed to the Internet",
+
+		"max_upstream.label Max Upstream Line Sync Data Rate kbps",
+		"max_upstream.info Max current upstream sync speed to the Internet",
+
+		"max_downstream.label Max Downstream Line Sync Data Rate kbps",
+		"max_downstream.info Max current downstream sync speed to the Internet",
 
 	}
 
@@ -29,10 +39,10 @@ func (h *SyncHandlers) GetData() []string {
 	modem_data := FetchData(GetModemUrl())
 
 	var data = []string{
-		fmt.Sprintf("sync.up %0.0f", modem_data.Sync.Up),
-		fmt.Sprintf("sync.down %0.0f", modem_data.Sync.Down),
-		fmt.Sprintf("sync.max_up %0.0f", modem_data.MaxRate.Up),
-		fmt.Sprintf("sync.max_down %0.0f", modem_data.MaxRate.Down),
+		fmt.Sprintf("upstream.value %0.0f", modem_data.Sync.Up),
+		fmt.Sprintf("downstream.value %0.0f", modem_data.Sync.Down),
+		fmt.Sprintf("max_upstream.value %0.0f", modem_data.MaxRate.Up),
+		fmt.Sprintf("max_downstream.value %0.0f", modem_data.MaxRate.Down),
 	}
 	return data
 }

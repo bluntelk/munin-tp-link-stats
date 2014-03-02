@@ -16,8 +16,12 @@ func (h *PowerHandlers) GetConfig() []string {
 		"graph_vlabel Line Power dbm",
 		"graph_scale no",
 		"graph_title Power dbm",
-		"power.label Power dbm",
-		"power.info The amount of power in the connection",
+
+		"upstream.label Upstream Power dbm",
+		"upstream.info The amount of power your upstream connection is using",
+
+		"downstream.label Downstream Power dbm",
+		"downstream.info The amount of power your downstream connection is using",
 
 	}
 
@@ -29,8 +33,8 @@ func (h *PowerHandlers) GetData() []string {
 	modem_data := FetchData(GetModemUrl())
 
 	var data = []string{
-		fmt.Sprintf("power.up %0.2f", modem_data.Power.Up),
-		fmt.Sprintf("power.down %0.2f", modem_data.Power.Down),
+		fmt.Sprintf("upstream.value %0.2f", modem_data.Power.Up),
+		fmt.Sprintf("downstream.value %0.2f", modem_data.Power.Down),
 	}
 	return data
 }

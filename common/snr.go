@@ -16,8 +16,12 @@ func (h *SnrHandlers) GetConfig() []string {
 		"graph_vlabel SNR db",
 		"graph_scale no",
 		"graph_title Signal to Noise Ratio",
-		"snr.label Signal to Noise Ratio",
-		"snr.info SNR below 6 is bad it means that there is too much noise for a good connection. You want a steady straight line with little variation.",
+
+		"upstream.label Upstream Signal to Noise Ratio",
+		"upstream.info SNR below 6 is bad it means that there is too much noise for a good connection. You want a steady straight line with little variation.",
+
+		"downstream.label Downstream Signal to Noise Ratio",
+		"downstream.info SNR below 6 is bad it means that there is too much noise for a good connection. You want a steady straight line with little variation.",
 
 	}
 
@@ -29,8 +33,8 @@ func (h *SnrHandlers) GetData() []string {
 	modem_data := FetchData(GetModemUrl())
 
 	var data = []string{
-		fmt.Sprintf("snr.up %0.2f", modem_data.Snr.Up),
-		fmt.Sprintf("snr.down %0.2f", modem_data.Snr.Down),
+		fmt.Sprintf("upstream.value %0.2f", modem_data.Snr.Up),
+		fmt.Sprintf("downstream.value %0.2f", modem_data.Snr.Down),
 	}
 	return data
 }

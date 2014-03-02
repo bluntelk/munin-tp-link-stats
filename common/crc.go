@@ -16,8 +16,12 @@ func (h *CrcHandlers) GetConfig() []string {
 		"graph_vlabel Line CRC Errors",
 		"graph_scale no",
 		"graph_title CRC Errors",
-		"crc.label CRC Errors",
-		"crc.info The number of CRC errors",
+
+		"upstream.label Upstream CRC Errors",
+		"upstream.info The number of Upstream CRC errors",
+
+		"downstream.label Downstream CRC Errors",
+		"downstream.info The number of Downstream CRC errors",
 
 	}
 
@@ -29,8 +33,8 @@ func (h *CrcHandlers) GetData() []string {
 	modem_data := FetchData(GetModemUrl())
 
 	var data = []string{
-		fmt.Sprintf("crc.up %0.2f", modem_data.Crc.Up),
-		fmt.Sprintf("crc.down %0.2f", modem_data.Crc.Down),
+		fmt.Sprintf("upstream.value %0.2f", modem_data.Crc.Up),
+		fmt.Sprintf("downstream.value %0.2f", modem_data.Crc.Down),
 	}
 	return data
 }
