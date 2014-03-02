@@ -12,7 +12,7 @@ func (h *SyncHandlers) GetAutoConfig() bool {
 
 func (h *SyncHandlers) GetConfig() []string {
 	var config = []string{
-		"graph_args --base 1000 -l 0 --upper-limit 2905000",
+		"graph_args --base 1000 -l 0 --upper-limit 25000",
 		"graph_vlabel Line Sync Data Rate kbps",
 		"graph_scale no",
 		"graph_title Line Sync Data Rate kbps",

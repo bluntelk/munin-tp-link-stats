@@ -4,13 +4,13 @@ import (
 	"fmt"
 )
 
-type PowerHandlers struct {}
+type CrcHandlers struct {}
 
-func (h *PowerHandlers) GetAutoConfig() bool {
+func (h *CrcHandlers) GetAutoConfig() bool {
 	return false
 }
 
-func (h *PowerHandlers) GetConfig() []string {
+func (h *CrcHandlers) GetConfig() []string {
 	var config = []string{
 		"graph_args --base 1000 -l 0",
 		"graph_vlabel Line CRC Errors",
@@ -24,7 +24,7 @@ func (h *PowerHandlers) GetConfig() []string {
 	return config
 }
 
-func (h *PowerHandlers) GetData() []string {
+func (h *CrcHandlers) GetData() []string {
 
 	modem_data := FetchData(GetModemUrl())
 
