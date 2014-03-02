@@ -32,12 +32,10 @@ type ModemStats struct {
 func (m *ModemStats) Populate(page string) {
 	skitch_stat(page, "(?s)SNR Margin.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Snr)
 	skitch_stat(page, "(?s)Line Attenuation.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Atten)
-	skitch_stat(page, "(?s)Data Rate.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Sync)
-	skitch_stat(page, "(?s)Max Rate.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.MaxRate)
-	skitch_stat(page, "(?s)POWER.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Power)
-	skitch_stat(page, "(?s)CRC.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Crc)
-	fmt.Printf("%+v\n", m)
-
+	skitch_stat(page, "(?s)Data Rate.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (kbps)", &m.Sync)
+	skitch_stat(page, "(?s)Max Rate.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (kbps)", &m.MaxRate)
+	skitch_stat(page, "(?s)POWER.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (dbm)", &m.Power)
+	skitch_stat(page, "(?s)CRC.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+)(.*)", &m.Crc)
 }
 
 func skitch_stat(page, find_re, grab_re string, stat *UpDownStats) {
@@ -57,6 +55,7 @@ func skitch_stat(page, find_re, grab_re string, stat *UpDownStats) {
 		stat.Down, _ = strconv.ParseFloat(fields[0][2],64)
 		stat.Up, _ = strconv.ParseFloat(fields[0][3],64)
 		stat.Unit = fields[0][4]
+		PluginDebugPrint(fmt.Sprintf("Found Stat: %+v", stat))
 	}
 }
 
