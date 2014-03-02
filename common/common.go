@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"regexp"
+	"strconv"
 )
 
 type ResponseStruct interface {
@@ -27,16 +28,43 @@ type ModemStats struct {
 	Power   UpDownStats
 	Crc     UpDownStats
 }
-func (m *ModemStats)Populate(page string) {
-	fmt.Print(page)
-	snr_re := regexp.MustCompile("<tr.*>.*?SNR Margin.*?</tr>")
-	fmt.Printf("%q\n", snr_re.FindAllStringSubmatch(page, -1))
+
+func (m *ModemStats) Populate(page string) {
+	skitch_stat(page, "(?s)SNR Margin.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Snr)
+	skitch_stat(page, "(?s)Line Attenuation.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Atten)
+	skitch_stat(page, "(?s)Data Rate.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Sync)
+	skitch_stat(page, "(?s)Max Rate.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.MaxRate)
+	skitch_stat(page, "(?s)POWER.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Power)
+	skitch_stat(page, "(?s)CRC.*?</tr>", "^(.*) ([0-9\\.]+) ([0-9\\.]+) (db)", &m.Crc)
+	fmt.Printf("%+v\n", m)
+
 }
+
+func skitch_stat(page, find_re, grab_re string, stat *UpDownStats) {
+	re_stripper := regexp.MustCompile("(?s)<.*?>")
+	re_trimmer := regexp.MustCompile("(?s)[\\s:]+")
+
+	re_find := regexp.MustCompile(find_re)
+	re_grab := regexp.MustCompile(grab_re)
+
+	found_text := re_find.FindString(page)
+	found_text_detagged := re_stripper.ReplaceAllString(found_text, " ")
+	found_text_clean := re_trimmer.ReplaceAllString(found_text_detagged, " ")
+	fields := re_grab.FindAllStringSubmatch(found_text_clean, 4)
+
+	if len(fields) > 0 {
+		//var error error
+		stat.Down, _ = strconv.ParseFloat(fields[0][2],64)
+		stat.Up, _ = strconv.ParseFloat(fields[0][3],64)
+		stat.Unit = fields[0][4]
+	}
+}
+
 type ModemUrl struct {
 	Host, Path, Username, Password string
 }
 
-func (m *ModemUrl)AsUrl() string {
+func (m *ModemUrl) AsUrl() string {
 	return fmt.Sprintf("http://%s:%s@%s%s", m.Username, m.Password, m.Host, m.Path)
 }
 
@@ -47,7 +75,7 @@ func GetModemUrl() ModemUrl {
 	m.Username = GetValueFromEnv("tplink_username", "admin")
 	m.Password = GetValueFromEnv("tplink_password", "")
 
-	PluginDebugPrint(fmt.Sprintf("Using URL %s",m.AsUrl()))
+	PluginDebugPrint(fmt.Sprintf("Using URL %s", m.AsUrl()))
 	return m
 }
 
@@ -84,7 +112,7 @@ func FetchData(url ModemUrl) ModemStats {
 		return stats;
 	}
 	PluginDebugPrint("Fetched the page")
-	data,err = ioutil.ReadAll(page.Body)
+	data, err = ioutil.ReadAll(page.Body)
 	page.Body.Close()
 	stats.Populate(string(data))
 
