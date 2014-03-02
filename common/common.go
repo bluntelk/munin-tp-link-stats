@@ -3,6 +3,8 @@ package common
 import (
 	"fmt"
 	"os"
+	"net/http"
+	"ioutil"
 	"strings"
 )
 
@@ -24,7 +26,9 @@ type ModemStats struct {
 	Power   UpDownStats
 	Crc     UpDownStats
 }
+func (m *ModemStats)Populate(page string) {
 
+}
 type ModemUrl struct {
 	Host, Path, Username, Password string
 }
@@ -68,6 +72,13 @@ func GetAction() string {
 
 func FetchData(url ModemUrl) ModemStats {
 	var stats ModemStats
+	client := new(http.Client)
+	data, err := client.Get(url.AsUrl())
+	if err != nil {
+		PluginDebugPrint(fmt.Sprintf("Failed to get modem page, %s", err))
+		return stats;
+	}
+	stats.Populate(data)
 
 	return stats;
 }
