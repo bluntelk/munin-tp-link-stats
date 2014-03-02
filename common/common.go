@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 	"net/http"
-	"ioutil"
+	"io/ioutil"
 	"strings"
+	"regexp"
 )
 
 type ResponseStruct interface {
@@ -27,7 +28,9 @@ type ModemStats struct {
 	Crc     UpDownStats
 }
 func (m *ModemStats)Populate(page string) {
-
+	fmt.Print(page)
+	snr_re := regexp.MustCompile("<tr.*>.*?SNR Margin.*?</tr>")
+	fmt.Printf("%q\n", snr_re.FindAllStringSubmatch(page, -1))
 }
 type ModemUrl struct {
 	Host, Path, Username, Password string
@@ -72,13 +75,18 @@ func GetAction() string {
 
 func FetchData(url ModemUrl) ModemStats {
 	var stats ModemStats
+	var data []byte
 	client := new(http.Client)
-	data, err := client.Get(url.AsUrl())
+	PluginDebugPrint(fmt.Sprintf("GETting page: %s", url.AsUrl()))
+	page, err := client.Get(url.AsUrl())
 	if err != nil {
 		PluginDebugPrint(fmt.Sprintf("Failed to get modem page, %s", err))
 		return stats;
 	}
-	stats.Populate(data)
+	PluginDebugPrint("Fetched the page")
+	data,err = ioutil.ReadAll(page.Body)
+	page.Body.Close()
+	stats.Populate(string(data))
 
 	return stats;
 }
